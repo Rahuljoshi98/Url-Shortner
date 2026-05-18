@@ -23,4 +23,25 @@ const validateCreateRequest = (req, res, next) => {
   next();
 };
 
-export { validateCreateRequest };
+const validateLoginRequest = (req, res, next) => {
+  if (!req.body) {
+    ErrorResponse.message = "Something went wrong while login.";
+    ErrorResponse.error = new AppError(
+      ["Request body missing"],
+      StatusCodes.BAD_REQUEST,
+    );
+    return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+  }
+  const { email, password } = req.body;
+  if (!email || !password) {
+    ErrorResponse.message = "Something went wrong while login.";
+    ErrorResponse.error = new AppError(
+      ["Request data missing"],
+      StatusCodes.BAD_REQUEST,
+    );
+    return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+  }
+  next();
+};
+
+export { validateCreateRequest, validateLoginRequest };
