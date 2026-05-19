@@ -53,9 +53,8 @@ const loginUser = async (data) => {
       );
     }
 
-    const token = JwtHelpers.generateWebToken({ email, _id: user._id });
+    const token = JwtHelpers.generateWebToken({ email, userId: user._id });
     return {
-      _id: user._id,
       token,
     };
   } catch (error) {
