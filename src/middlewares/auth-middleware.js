@@ -17,9 +17,20 @@ const verifyUser = (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
     const decoded = decodeWebToken(token);
-    req.body = decoded.userId;
+    req.user = decoded;
     next();
   } catch (error) {
+    if (
+      error.name == "TokenExpiredError" ||
+      error.name == "JsonWebTokenError"
+    ) {
+      ErrorResponse.message = "Something went wrong creating short url.";
+      ErrorResponse.error = new AppError(
+        ["Unauthorized user"],
+        StatusCodes.UNAUTHORIZED,
+      );
+      return res.status(StatusCodes.UNAUTHORIZED).json(ErrorResponse);
+    }
     ErrorResponse.message = "Something went wrong creating short url.";
     ErrorResponse.error = new AppError(
       [error.message || "Something went wrong"],

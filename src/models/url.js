@@ -30,6 +30,13 @@ const urlSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    versionKey: false,
+    toJSON: {
+      transform: function (doc, response) {
+        delete response.userId;
+        return response;
+      },
+    },
   },
 );
 

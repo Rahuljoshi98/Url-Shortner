@@ -1,9 +1,11 @@
+import { StatusCodes } from "http-status-codes";
 import { UrlRepository } from "../repository/index.js";
 import AppError from "../utils/errors/app-errors.js";
 
 const urlRepository = new UrlRepository();
 
-const generateShortCode = async () => {
+const generateShortCode = () => {
+  let shortUrl = "";
   const allowedFields =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (let i = 0; i < 7; i++) {
@@ -20,11 +22,11 @@ const createShortUrl = async (data) => {
 
     while (exists) {
       shortCode = generateShortCode();
-      exists = urlRepository.findByShortCode(shortCode);
+      exists = await urlRepository.findByShortCode(shortCode);
     }
     data.shortCode = shortCode;
-    const data = urlRepository.create(data);
-    return data;
+    const response = await urlRepository.create(data);
+    return response;
   } catch (error) {
     if (error.name === "ValidationError") {
       let explanation = [];
