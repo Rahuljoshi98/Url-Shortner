@@ -35,4 +35,28 @@ const validateCreateRequest = (req, res, next) => {
   }
 };
 
-export { validateCreateRequest };
+const validateGetAllUrlRequest = (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    if (!userId) {
+      ErrorResponse.message = "Something went wrong while getting.";
+      ErrorResponse.error = new AppError(
+        ["Unauthorized user"],
+        StatusCodes.UNAUTHORIZED,
+      );
+      return res.status(StatusCodes.UNAUTHORIZED).json(ErrorResponse);
+    }
+
+    req.body.userId = userId;
+    next();
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong while getting.";
+    ErrorResponse.error = new AppError(
+      [error.message],
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse);
+  }
+};
+
+export { validateCreateRequest, validateGetAllUrlRequest };

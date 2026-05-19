@@ -11,4 +11,11 @@ router.post(
   UrlController.createShortUrl,
 );
 
+router.get(
+  "/",
+  AuthMiddleware.verifyUser,
+  UrlMiddleware.validateGetAllUrlRequest,
+  UrlController.getAllUrls,
+);
+
 export default router;

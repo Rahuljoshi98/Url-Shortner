@@ -53,4 +53,13 @@ const createShortUrl = async (data) => {
   }
 };
 
-export { createShortUrl };
+const getAllUrls = async (data) => {
+  try {
+    const response = await urlRepository.getAll(data);
+    return response;
+  } catch (error) {
+    throw new AppError([error.message], StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+};
+
+export { createShortUrl, getAllUrls };

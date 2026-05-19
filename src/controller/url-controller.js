@@ -5,7 +5,7 @@ import { UrlService } from "../services/index.js";
 const createShortUrl = async (req, res) => {
   try {
     const response = await UrlService.createShortUrl(req.body);
-    SuccessResponse.message = "User logged in successfully";
+    SuccessResponse.message = "Url created successfully";
     SuccessResponse.data = response;
     return res.status(StatusCodes.CREATED).json(SuccessResponse);
   } catch (error) {
@@ -17,4 +17,19 @@ const createShortUrl = async (req, res) => {
   }
 };
 
-export { createShortUrl };
+const getAllUrls = async (req, res) => {
+  try {
+    const response = await UrlService.getAllUrls(req.body);
+    SuccessResponse.message = "Urls fetched successfully";
+    SuccessResponse.data = response;
+    return res.status(StatusCodes.OK).json(SuccessResponse);
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong";
+    ErrorResponse.error = error;
+    return res
+      .status(error.statusCode || StatusCodes.BAD_REQUEST)
+      .json(ErrorResponse);
+  }
+};
+
+export { createShortUrl, getAllUrls };
