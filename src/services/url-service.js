@@ -59,7 +59,7 @@ const getAllUrls = async (data) => {
     const { page, limit } = PaginationHelper.buildPaginationOptions(data);
     const filter = { userId: data.userId };
 
-    const response = await urlRepository.getAllPaginated({
+    const response = await urlRepository.getAll({
       filter,
       page,
       limit,
@@ -67,11 +67,33 @@ const getAllUrls = async (data) => {
 
     return response;
   } catch (error) {
-    if (error.statusCode) {
-      throw error;
-    }
+    throw new AppError(
+      [error.message],
+      error.StatusCodes || StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+const getOriginalLink = async (data) => {
+  try {
+    const { shortCode } = data;
+    const filter = {
+      shortCode,
+    };
+
+    const excludeFields = [
+      "_id",
+      "clicks",
+      "expiresAt",
+      "createdAt",
+      "updatedAt",
+    ];
+
+    const response = await urlRepository.getOne({ filter, excludeFields });
+    return response;
+  } catch (error) {
     throw new AppError([error.message], StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
 
-export { createShortUrl, getAllUrls };
+export { createShortUrl, getAllUrls, getOriginalLink };

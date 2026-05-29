@@ -36,4 +36,20 @@ const getAllUrls = async (req, res) => {
   }
 };
 
-export { createShortUrl, getAllUrls };
+const getOriginalLink = async (req, res) => {
+  try {
+    const response = await UrlService.getOriginalLink(req.params);
+    SuccessResponse.message = "Urls fetched successfully";
+    SuccessResponse.data = response;
+    const { originalUrl } = response;
+    return res.redirect(originalUrl);
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong";
+    ErrorResponse.error = error;
+    return res
+      .status(error.statusCode || StatusCodes.BAD_REQUEST)
+      .json(ErrorResponse);
+  }
+};
+
+export { createShortUrl, getAllUrls, getOriginalLink };

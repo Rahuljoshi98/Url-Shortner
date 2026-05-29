@@ -11,11 +11,8 @@ router.post(
   UrlController.createShortUrl,
 );
 
-router.get(
-  "/",
-  AuthMiddleware.verifyUser,
-  UrlMiddleware.validateGetAllUrlRequest,
-  UrlController.getAllUrls,
-);
+router.get("/", AuthMiddleware.verifyUser, UrlController.getAllUrls);
+
+router.get("/code/:shortCode", UrlController.getOriginalLink);
 
 export default router;

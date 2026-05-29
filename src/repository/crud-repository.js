@@ -27,11 +27,6 @@ class CrudRepository {
     return response;
   }
 
-  async getAll() {
-    const response = await this.model.find({});
-    return response;
-  }
-
   async destroy(id) {
     const response = await this.model.findByIdAndRemove(id);
     if (!response) {
@@ -63,7 +58,7 @@ class CrudRepository {
     return response;
   }
 
-  async getAllPaginated({ filter, page = 1, limit = 10, excludeFields = [] }) {
+  async getAll({ filter = {}, page = 1, limit = 10, excludeFields = [] }) {
     const skip = (page - 1) * limit;
     const projection = excludeFields.map((field) => `-${field}`);
 
@@ -88,6 +83,19 @@ class CrudRepository {
         hasNextPage: page * limit < totalDocs,
       },
     };
+  }
+
+  async getOne({ filter = {}, excludeFields = [] }) {
+    const projection = excludeFields.map((field) => `-${field}`);
+
+    const response = await this.model.findOne(filter).select(projection);
+    if (!response) {
+      throw new AppError(
+        ["Not able to fetch the resource"],
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    return response;
   }
 }
 
