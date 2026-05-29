@@ -63,11 +63,17 @@ class CrudRepository {
     return response;
   }
 
-  async getAllPaginated({ filter, page = 1, limit = 10 }) {
+  async getAllPaginated({ filter, page = 1, limit = 10, excludeFields = [] }) {
     const skip = (page - 1) * limit;
+    const projection = excludeFields.map((field) => `-${field}`);
 
     const [rows, totalDocs] = await Promise.all([
-      this.model.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      this.model
+        .find(filter)
+        .select(projection)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
       this.model.countDocuments(filter),
     ]);
 
