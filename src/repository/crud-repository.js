@@ -62,6 +62,27 @@ class CrudRepository {
     }
     return response;
   }
+
+  async getAllPaginated({ filter, page = 1, limit = 10 }) {
+    const skip = (page - 1) * limit;
+
+    const [rows, totalDocs] = await Promise.all([
+      this.model.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      this.model.countDocuments(filter),
+    ]);
+
+    return {
+      rows,
+      pagination: {
+        page,
+        limit,
+        totalDocs,
+        totalPages: Math.ceil(totalDocs / limit) || 0,
+        hasPrevPage: page > 1,
+        hasNextPage: page * limit < totalDocs,
+      },
+    };
+  }
 }
 
 export default CrudRepository;

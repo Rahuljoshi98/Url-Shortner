@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { UrlRepository } from "../repository/index.js";
 import AppError from "../utils/errors/app-errors.js";
+import { PaginationHelper } from "../utils/common/index.js";
 
 const urlRepository = new UrlRepository();
 
@@ -55,9 +56,20 @@ const createShortUrl = async (data) => {
 
 const getAllUrls = async (data) => {
   try {
-    const response = await urlRepository.getAll(data);
+    const { page, limit } = PaginationHelper.buildPaginationOptions(data);
+    const filter = { userId: data.userId };
+
+    const response = await urlRepository.getAllPaginated({
+      filter,
+      page,
+      limit,
+    });
+
     return response;
   } catch (error) {
+    if (error.statusCode) {
+      throw error;
+    }
     throw new AppError([error.message], StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
