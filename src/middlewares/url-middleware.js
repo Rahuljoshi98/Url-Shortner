@@ -47,7 +47,6 @@ const validateGetAllUrlRequest = (req, res, next) => {
       return res.status(StatusCodes.UNAUTHORIZED).json(ErrorResponse);
     }
 
-    req.body.userId = userId;
     next();
   } catch (error) {
     ErrorResponse.message = "Something went wrong while getting.";

@@ -19,7 +19,11 @@ const createShortUrl = async (req, res) => {
 
 const getAllUrls = async (req, res) => {
   try {
-    const response = await UrlService.getAllUrls(req.body);
+    const { userId } = req.user;
+    const response = await UrlService.getAllUrls({
+      ...req.query,
+      userId,
+    });
     SuccessResponse.message = "Urls fetched successfully";
     SuccessResponse.data = response;
     return res.status(StatusCodes.OK).json(SuccessResponse);

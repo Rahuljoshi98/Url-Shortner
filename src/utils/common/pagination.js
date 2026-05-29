@@ -1,3 +1,6 @@
+import { StatusCodes } from "http-status-codes";
+import AppError from "../errors/app-errors.js";
+
 const buildPaginationOptions = (data) => {
   const pageRaw = data?.page ?? 1;
   const limitRaw = data?.limit ?? 10;
