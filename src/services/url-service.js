@@ -117,4 +117,28 @@ const getUrlDetails = async (data) => {
   }
 };
 
-export { createShortUrl, getAllUrls, getOriginalLink, getUrlDetails };
+const deleteUrl = async (data) => {
+  try {
+    const { id, userId } = data;
+    const filter = {
+      _id: id,
+      userId,
+    };
+
+    const response = await urlRepository.destroy({ filter });
+    return response;
+  } catch (error) {
+    if (error.statusCode === StatusCodes.NOT_FOUND) {
+      throw new AppError(["URL not found"], StatusCodes.NOT_FOUND);
+    }
+    throw new AppError([error.message], StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+};
+
+export {
+  createShortUrl,
+  getAllUrls,
+  getOriginalLink,
+  getUrlDetails,
+  deleteUrl,
+};

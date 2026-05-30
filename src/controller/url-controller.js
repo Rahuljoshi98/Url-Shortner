@@ -69,4 +69,26 @@ const getUrlDetails = async (req, res) => {
   }
 };
 
-export { createShortUrl, getAllUrls, getOriginalLink, getUrlDetails };
+const deleteUrl = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const response = await UrlService.deleteUrl({ ...req.params, userId });
+    SuccessResponse.message = "Urls deleted successfully";
+    SuccessResponse.data = {};
+    return res.status(StatusCodes.OK).json(SuccessResponse);
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong";
+    ErrorResponse.error = error;
+    return res
+      .status(error.statusCode || StatusCodes.BAD_REQUEST)
+      .json(ErrorResponse);
+  }
+};
+
+export {
+  createShortUrl,
+  getAllUrls,
+  getOriginalLink,
+  getUrlDetails,
+  deleteUrl,
+};

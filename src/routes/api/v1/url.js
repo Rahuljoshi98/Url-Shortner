@@ -22,4 +22,11 @@ router.get(
   UrlController.getUrlDetails,
 );
 
+router.delete(
+  "/:id",
+  AuthMiddleware.verifyUser,
+  UrlMiddleware.validateDeleteUrl,
+  UrlController.deleteUrl,
+);
+
 export default router;

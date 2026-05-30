@@ -27,8 +27,8 @@ class CrudRepository {
     return response;
   }
 
-  async destroy(id) {
-    const response = await this.model.findByIdAndRemove(id);
+  async destroy({ filter }) {
+    const response = await this.model.findOneAndDelete(filter);
     if (!response) {
       throw new AppError(
         ["Not able to fetch the resource."],

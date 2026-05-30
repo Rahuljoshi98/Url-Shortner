@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 const validateCreateRequest = (req, res, next) => {
   try {
     if (!req.body) {
-      ErrorResponse.message = "Something went wrong while creating user.";
+      ErrorResponse.message = "Something went wrong while creating.";
       ErrorResponse.error = new AppError(
         ["Request body missing"],
         StatusCodes.BAD_REQUEST,
@@ -39,7 +39,7 @@ const validateCreateRequest = (req, res, next) => {
 const validateGetUrlDetails = (req, res, next) => {
   try {
     if (!req.params) {
-      ErrorResponse.message = "Something went wrong while creating user.";
+      ErrorResponse.message = "Something went wrong while creating.";
       ErrorResponse.error = new AppError(
         ["Request data missing"],
         StatusCodes.BAD_REQUEST,
@@ -67,4 +67,35 @@ const validateGetUrlDetails = (req, res, next) => {
   }
 };
 
-export { validateCreateRequest, validateGetUrlDetails };
+const validateDeleteUrl = (req, res, next) => {
+  try {
+    if (!req.params) {
+      ErrorResponse.message = "Something went wrong while deleting.";
+      ErrorResponse.error = new AppError(
+        ["Request data missing"],
+        StatusCodes.BAD_REQUEST,
+      );
+      return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      ErrorResponse.message = "Something went wrong while deleting.";
+      ErrorResponse.error = new AppError(
+        ["Invalid url id"],
+        StatusCodes.BAD_REQUEST,
+      );
+      return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+
+    next();
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong while deleting.";
+    ErrorResponse.error = new AppError(
+      [error.message],
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse);
+  }
+};
+
+export { validateCreateRequest, validateGetUrlDetails, validateDeleteUrl };
