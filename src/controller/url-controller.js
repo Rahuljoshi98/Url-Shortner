@@ -52,4 +52,21 @@ const getOriginalLink = async (req, res) => {
   }
 };
 
-export { createShortUrl, getAllUrls, getOriginalLink };
+const getUrlDetails = async (req, res) => {
+  try {
+    const { userId } = req.user;
+
+    const response = await UrlService.getUrlDetails({ ...req.params, userId });
+    SuccessResponse.message = "Urls fetched successfully";
+    SuccessResponse.data = response;
+    return res.status(StatusCodes.OK).json(SuccessResponse);
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong";
+    ErrorResponse.error = error;
+    return res
+      .status(error.statusCode || StatusCodes.BAD_REQUEST)
+      .json(ErrorResponse);
+  }
+};
+
+export { createShortUrl, getAllUrls, getOriginalLink, getUrlDetails };
