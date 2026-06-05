@@ -81,15 +81,13 @@ const getOriginalLink = async (data) => {
       shortCode,
     };
 
-    const excludeFields = [
-      "_id",
-      "clicks",
-      "expiresAt",
-      "createdAt",
-      "updatedAt",
-    ];
+    const response = await urlRepository.getOne({ filter });
 
-    const response = await urlRepository.getOne({ filter, excludeFields });
+    response.clicks += 1;
+    response.save().catch((err) => {
+      console.error("Failed to update clicks:", err.message);
+    });
+
     return response;
   } catch (error) {
     if (error.statusCode === StatusCodes.NOT_FOUND) {
