@@ -38,15 +38,9 @@ class CrudRepository {
     return response;
   }
 
-  async update(data, id) {
-    if (Object.keys(data)?.length === 0) {
-      throw new AppError(
-        ["No Data Provided To Update."],
-        StatusCodes.BAD_REQUEST,
-      );
-    }
+  async update({ filter, dataToUpdate }) {
     // new: true returns the updated document; without it, Mongoose returns the old document
-    const response = await this.model.findByIdAndUpdate(id, data, {
+    const response = await this.model.findOneAndUpdate(filter, dataToUpdate, {
       new: true,
     });
     if (!response) {

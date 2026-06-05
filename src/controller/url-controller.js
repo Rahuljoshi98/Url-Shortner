@@ -85,10 +85,27 @@ const deleteUrl = async (req, res) => {
   }
 };
 
+const updateUrl = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await UrlService.updateUrl({ ...req.body, id });
+    SuccessResponse.message = "Urls updated successfully";
+    SuccessResponse.data = response;
+    return res.status(StatusCodes.OK).json(SuccessResponse);
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong";
+    ErrorResponse.error = error;
+    return res
+      .status(error.statusCode || StatusCodes.BAD_REQUEST)
+      .json(ErrorResponse);
+  }
+};
+
 export {
   createShortUrl,
   getAllUrls,
   getOriginalLink,
   getUrlDetails,
   deleteUrl,
+  updateUrl,
 };

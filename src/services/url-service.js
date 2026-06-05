@@ -1,7 +1,10 @@
 import { StatusCodes } from "http-status-codes";
 import { UrlRepository } from "../repository/index.js";
 import AppError from "../utils/errors/app-errors.js";
-import { PaginationHelper } from "../utils/common/index.js";
+import {
+  PaginationHelper,
+  GetAllowedFieldsHelper,
+} from "../utils/common/index.js";
 
 const urlRepository = new UrlRepository();
 
@@ -133,10 +136,58 @@ const deleteUrl = async (data) => {
   }
 };
 
+const updateUrl = async (data) => {
+  try {
+    const { userId, id } = data;
+    const allowedFields = ["originalUrl", "shortCode"];
+    const dataToUpdate = GetAllowedFieldsHelper.getAllowedFields(
+      allowedFields,
+      data,
+    );
+
+    const filter = {
+      _id: id,
+      userId,
+    };
+
+    const response = await urlRepository.update({ filter, dataToUpdate });
+    return response;
+  } catch (error) {
+    if (error.statusCode === StatusCodes.BAD_REQUEST) {
+      throw new AppError(
+        [error.explanation || "Bad request"],
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    if (error.statusCode === StatusCodes.NOT_FOUND) {
+      throw new AppError(["Resource not found"], StatusCodes.NOT_FOUND);
+    }
+    if (error.name === "ValidationError") {
+      let explanation = [];
+
+      Object.values(error.errors).forEach((err) => {
+        explanation.push(err.message);
+      });
+
+      throw new AppError(explanation, StatusCodes.BAD_REQUEST);
+    }
+
+    if (error.name === "MongoServerError" && error.code === 11000) {
+      throw new AppError(["Url already exists"], StatusCodes.BAD_REQUEST);
+    }
+
+    if (error.name === "CastError") {
+      throw new AppError(["Invalid ID"], StatusCodes.BAD_REQUEST);
+    }
+    throw new AppError([error.message], StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+};
+
 export {
   createShortUrl,
   getAllUrls,
   getOriginalLink,
   getUrlDetails,
   deleteUrl,
+  updateUrl,
 };

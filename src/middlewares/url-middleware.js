@@ -98,4 +98,41 @@ const validateDeleteUrl = (req, res, next) => {
   }
 };
 
-export { validateCreateRequest, validateGetUrlDetails, validateDeleteUrl };
+const validateUpdateUrl = (req, res, next) => {
+  try {
+    if (!req.body || !req.params) {
+      ErrorResponse.message = "Something went wrong while updating.";
+      ErrorResponse.error = new AppError(
+        ["Request body missing"],
+        StatusCodes.BAD_REQUEST,
+      );
+      return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      ErrorResponse.message = "Something went wrong while updating.";
+      ErrorResponse.error = new AppError(
+        ["Invalid url id"],
+        StatusCodes.BAD_REQUEST,
+      );
+      return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+    const { userId } = req.user;
+    req.body.userId = userId;
+    next();
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong while updating.";
+    ErrorResponse.error = new AppError(
+      [error.message],
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse);
+  }
+};
+
+export {
+  validateCreateRequest,
+  validateGetUrlDetails,
+  validateDeleteUrl,
+  validateUpdateUrl,
+};

@@ -29,4 +29,11 @@ router.delete(
   UrlController.deleteUrl,
 );
 
+router.patch(
+  "/:id",
+  AuthMiddleware.verifyUser,
+  UrlMiddleware.validateUpdateUrl,
+  UrlController.updateUrl,
+);
+
 export default router;
