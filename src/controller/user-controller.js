@@ -32,4 +32,19 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { createUser, loginUser };
+const logoutUser = async (req, res) => {
+  try {
+    const response = await UserService.logoutUser();
+    SuccessResponse.message = response.message;
+    SuccessResponse.data = {};
+    return res.status(StatusCodes.OK).json(SuccessResponse);
+  } catch (error) {
+    ErrorResponse.message = "Something went wrong";
+    ErrorResponse.error = error;
+    return res
+      .status(error.statusCode || StatusCodes.BAD_REQUEST)
+      .json(ErrorResponse);
+  }
+};
+
+export { createUser, loginUser, logoutUser };

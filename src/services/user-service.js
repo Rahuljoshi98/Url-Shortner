@@ -72,4 +72,10 @@ const loginUser = async (data) => {
   }
 };
 
-export { createUser, loginUser };
+const logoutUser = async () => {
+  return {
+    message: "User logged out successfully",
+  };
+};
+
+export { createUser, loginUser, logoutUser };

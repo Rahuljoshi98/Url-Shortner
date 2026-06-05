@@ -1,6 +1,6 @@
 import express from "express";
 import { UserController } from "../../../controller/index.js";
-import { UserMiddleware } from "../../../middlewares/index.js";
+import { AuthMiddleware, UserMiddleware } from "../../../middlewares/index.js";
 
 const router = express.Router();
 
@@ -15,5 +15,7 @@ router.post(
   UserMiddleware.validateLoginRequest,
   UserController.loginUser,
 );
+
+router.post("/logout", AuthMiddleware.verifyUser, UserController.logoutUser);
 
 export default router;
