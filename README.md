@@ -10,6 +10,7 @@ Add these values to `.env`:
 DB_URI=mongodb://localhost:27017/url-shortner
 REDIS_URL=redis://UserName:MyPassword@PublicEndpoint
 REDIRECT_CACHE_TTL_SECONDS=86400
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001
 ```
 
 If `REDIS_URL` is not configured, the app still runs and falls back to MongoDB.
