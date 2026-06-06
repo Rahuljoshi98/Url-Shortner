@@ -5,6 +5,9 @@ import {
   PaginationHelper,
   GetAllowedFieldsHelper,
 } from "../utils/common/index.js";
+import { RedisHelpers } from "../utils/common/index.js";
+import { CACHE_KEYS } from "../constants/cached-keys.js";
+const { REDIRECT } = CACHE_KEYS;
 
 const urlRepository = new UrlRepository();
 
@@ -30,6 +33,11 @@ const createShortUrl = async (data) => {
     }
     data.shortCode = shortCode;
     const response = await urlRepository.create(data);
+    await RedisHelpers.cacheValue({
+      keyPrefix: REDIRECT,
+      key: response.shortCode,
+      value: response.originalUrl,
+    });
     return response;
   } catch (error) {
     if (error.name === "ValidationError") {
@@ -80,14 +88,31 @@ const getAllUrls = async (data) => {
 const getOriginalLink = async (data) => {
   try {
     const { shortCode } = data;
-    const filter = {
+
+    const cachedOriginalUrl = await RedisHelpers.getCachedValue(
+      REDIRECT,
       shortCode,
-    };
+    );
 
-    const response = await urlRepository.getOne({ filter });
+    if (cachedOriginalUrl) {
+      urlRepository.incrementClicksByShortCode(shortCode).catch((err) => {
+        console.error("Failed to update clicks:", err.message);
+      });
 
-    response.clicks += 1;
-    response.save().catch((err) => {
+      return {
+        originalUrl: cachedOriginalUrl,
+      };
+    }
+
+    const response = await urlRepository.findRedirectByShortCode(shortCode);
+
+    await RedisHelpers.cacheValue({
+      keyPrefix: REDIRECT,
+      key: shortCode,
+      value: response.originalUrl,
+    });
+
+    urlRepository.incrementClicksByShortCode(shortCode).catch((err) => {
       console.error("Failed to update clicks:", err.message);
     });
 
@@ -127,6 +152,7 @@ const deleteUrl = async (data) => {
     };
 
     const response = await urlRepository.destroy({ filter });
+    await RedisHelpers.deleteCacheValue(REDIRECT, response.shortCode);
     return response;
   } catch (error) {
     if (error.statusCode === StatusCodes.NOT_FOUND) {
@@ -150,7 +176,13 @@ const updateUrl = async (data) => {
       userId,
     };
 
+    const existingUrl = await urlRepository.getOne({ filter });
     const response = await urlRepository.update({ filter, dataToUpdate });
+    await RedisHelpers.deleteCacheValue(REDIRECT, existingUrl.shortCode);
+    await cacheRedirect({
+      shortCode: response.shortCode,
+      originalUrl: response.originalUrl,
+    });
     return response;
   } catch (error) {
     if (error.statusCode === StatusCodes.BAD_REQUEST) {
