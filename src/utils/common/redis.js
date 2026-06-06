@@ -46,7 +46,9 @@ const deleteCacheValue = async (keyPrefix, key) => {
     }
 
     await redisClient.del(getCacheKey(keyPrefix, key));
-  } catch (error) {}
+  } catch (error) {
+    console.error("Failed to delete redis cache:", error.message);
+  }
 };
 
 export { getCachedValue, deleteCacheValue, cacheValue };

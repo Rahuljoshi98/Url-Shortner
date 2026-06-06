@@ -179,9 +179,10 @@ const updateUrl = async (data) => {
     const existingUrl = await urlRepository.getOne({ filter });
     const response = await urlRepository.update({ filter, dataToUpdate });
     await RedisHelpers.deleteCacheValue(REDIRECT, existingUrl.shortCode);
-    await cacheRedirect({
-      shortCode: response.shortCode,
-      originalUrl: response.originalUrl,
+    await RedisHelpers.cacheValue({
+      keyPrefix: REDIRECT,
+      key: response.shortCode,
+      value: response.originalUrl,
     });
     return response;
   } catch (error) {
