@@ -1,11 +1,12 @@
-import { connectDB } from "./config/index.js";
+import { connectDB, connectRedis } from "./config/index.js";
 import { app } from "./app.js";
 
 const port = process.env.PORT || 3002;
 
 connectDB()
-  .then(() => {
+  .then(async () => {
     console.log("Connected to database successfully");
+    await connectRedis();
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
