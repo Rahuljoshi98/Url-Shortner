@@ -13,8 +13,6 @@ router.post(
 
 router.get("/", AuthMiddleware.verifyUser, UrlController.getAllUrls);
 
-router.get("/code/:shortCode", UrlController.getOriginalLink);
-
 router.get(
   "/id/:id",
   AuthMiddleware.verifyUser,

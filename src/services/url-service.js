@@ -165,7 +165,7 @@ const deleteUrl = async (data) => {
 const updateUrl = async (data) => {
   try {
     const { userId, id } = data;
-    const allowedFields = ["originalUrl", "shortCode"];
+    const allowedFields = ["originalUrl", "shortCode", "expiresAt"];
     const dataToUpdate = GetAllowedFieldsHelper.getAllowedFields(
       allowedFields,
       data,
